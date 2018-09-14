@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.util.Base64;
+import java.util.HashMap;
 
 
 @Controller
@@ -58,25 +59,49 @@ public class UserController {
     @RequestMapping(value = "/signup", method = RequestMethod.POST)
     public String signUpUser(@RequestParam("username") String username,
                              @RequestParam("password") String password,
-                               HttpSession session) {
+                               HttpSession session,Model model) {
         // We'll first assign a default photo to the user
-        ProfilePhoto photo = new ProfilePhoto();
-        profilePhotoService.save(photo);
+        //checking valid username length
+        HashMap<String,String> errors = new HashMap<String,String>();
+        if(username.length()<6 || password.length()<6){
+            if(username.length()<6)
+            {errors.put("username","need to be 6 characters long");}
+            if(password.length()<6)
+            {            errors.put("password","needs to be 6 characters long");}
 
-        // it is good security practice to store the hash version of the password
-        // in the database. Therefore, if your a hacker gains access to your
-        // database, the hacker cannot see the password for your users
-        String passwordHash = hashPassword(password);
-        User user = new User(username, passwordHash, photo);
-        boolean isRegister =userService.register(user);
 
-        // We want to create an "currUser" attribute in the HTTP session, and store the user
-        // as the attribute's value to signify that the user has logged in
-        if(isRegister==true){
-            session.setAttribute("currUser", user);
+            model.addAttribute("errors",errors);
+            return "users/signup";
 
-        return "redirect:/";}
-        else return "redirect:/signup";
+        }
+        else {
+            ProfilePhoto photo = new ProfilePhoto();
+            profilePhotoService.save(photo);
+
+            // it is good security practice to store the hash version of the password
+            // in the database. Therefore, if your a hacker gains access to your
+            // database, the hacker cannot see the password for your users
+            String passwordHash = hashPassword(password);
+            User user = new User(username, passwordHash, photo);
+            boolean isRegister = userService.register(user);
+
+
+            // We want to create an "currUser" attribute in the HTTP session, and store the user
+            // as the attribute's value to signify that the user has logged in
+            if (isRegister == true) {
+
+
+                session.setAttribute("currUser", user);
+
+                return "redirect:/";
+            } else {
+
+                errors.put("username", "username has been registered");
+                //error.put("password","needs to be 6 characters long");
+                model.addAttribute("errors", errors);
+                return "users/signup";
+            }
+        }
     }
 
     /**
