@@ -68,13 +68,15 @@ public class UserController {
         // database, the hacker cannot see the password for your users
         String passwordHash = hashPassword(password);
         User user = new User(username, passwordHash, photo);
-        userService.register(user);
+        boolean isRegister =userService.register(user);
 
         // We want to create an "currUser" attribute in the HTTP session, and store the user
         // as the attribute's value to signify that the user has logged in
-        session.setAttribute("currUser", user);
+        if(isRegister==true){
+            session.setAttribute("currUser", user);
 
-        return "redirect:/";
+        return "redirect:/";}
+        else return "redirect:/signup";
     }
 
     /**

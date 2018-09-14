@@ -20,9 +20,14 @@ public class UserManager extends SessionManager {
      */
     public User registerUser(final User user) {
         Session session = openSession();
+        User checkUser = (User)session.createCriteria(User.class)
+                .add(Restrictions.eq("username", user.getUsername()))
+                .uniqueResult();
+        if(checkUser==null){
         session.save(user);
         commitSession(session);
-        return user;
+        return user;}
+        return null;
     }
 
     /**
