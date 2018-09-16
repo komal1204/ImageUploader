@@ -105,7 +105,7 @@ public class ImageController {
             Image newImage = new Image(title, description, uploadedImageData, currUser, imageTags);
             imageService.save(newImage);
 
-            return "redirect:/images/" + newImage.getTitle();
+            return "redirect:/images/" + newImage.getId();
         }
     }
 
@@ -193,7 +193,7 @@ public class ImageController {
         image.setTags(imageTags);
         imageService.update(image);
 
-        return "redirect:/images/" + title;
+        return "redirect:/images/" + id;
     }
 
     /**

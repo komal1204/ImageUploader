@@ -22,6 +22,8 @@ public class ProfilePhoto implements Serializable{
     @Column(columnDefinition="TEXT")
     private String profileImageData; // base64 version of the profile image;
 
+
+
     public ProfilePhoto() {
         this.profileImageData = defaultAvatarBase64;
     }
